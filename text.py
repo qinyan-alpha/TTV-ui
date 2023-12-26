@@ -71,6 +71,7 @@ class Loadingwindow(QMainWindow):
         widgets.pushButton.clicked.connect(self.buttonClick)
         widgets.pushButton_2.clicked.connect(self.inferparsersetting_visiable)
         widgets.save.clicked.connect(self.buttonClick)
+    
         widgets.play.clicked.connect(self.play_threading)
         widgets.closeAppBtn.clicked.connect(self.close)
         widgets.maximizeRestoreAppBtn.clicked.connect(self.max_windows)
@@ -78,6 +79,7 @@ class Loadingwindow(QMainWindow):
         widgets.changeoutboderAppBtn.clicked.connect(self.buttonClick)
         widgets.lineEdit.setText(update_url)
         widgets.lineEdit.textChanged.connect(self.updateurl)
+        widgets.update.clicked.connect(self.get_update)
         
         folder_names = [name for name in os.listdir(log_folder) if os.path.isdir(os.path.join(log_folder, name))]
         #print(type(folder_names))
@@ -139,17 +141,20 @@ class Loadingwindow(QMainWindow):
                 self.audio_data = audio_data
                 self.sample_rate = hps.data.sampling_rate                
                 duration = len(audio_data) / hps.data.sampling_rate
-                scipy.io.wavfile.write('./test.wav', hps.data.sampling_rate, audio_data)
+                if not os.path.exists("./voice/test.wav"):
+                    os.makedirs('./voice')
+                scipy.io.wavfile.write('./voice/test.wav', hps.data.sampling_rate, audio_data)
                 print(duration,type(duration))
                 self.duration = round(duration,1)
                 widgets.stateshow.setText("保存临时音频成功")
         if btnName == "changeoutboderAppBtn":
             if self.outboder == True:
                 self.outboder = False
-                self.setWindowFlags(Qt.FramelessWindowHint)
+                self.setWindowFlags(Qt.Window)
+                self.show()
             else:
                 self.outboder = True
-                self.setWindowFlags(Qt.Window)
+                self.setWindowFlags(Qt.FramelessWindowHint)
                 self.show()                
                 pass
                 
@@ -344,8 +349,7 @@ class Loadingwindow(QMainWindow):
         print(wavsvalue)
         self.play_time = self.duration*wavsvalue/100
         print(self.play_time,self.duration)
-        self.play = False
-        self.play_start = False                        
+                      
                  
     
     def inferbutton(self):
@@ -384,7 +388,15 @@ class Loadingwindow(QMainWindow):
             self.infering = True
             
     def close_app(self):
+        #self.closeEvent()
         self.close()
+        app.quit()
+        
+        #self.close()
+
+    #def closeEvent(self,event):
+        #quit()
+        
     
     def max_windows(self):
         if self.max == True:
@@ -441,4 +453,8 @@ if  __name__ == '__main__':
     pixmap = QPixmap("icon.ico")
     app.setWindowIcon(pixmap)    
     window.show()
-    app.exec() 
+    app.exec()
+    #quit()
+    #sys.exit()
+    
+
