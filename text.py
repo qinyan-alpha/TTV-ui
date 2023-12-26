@@ -17,6 +17,7 @@ import logging
 import simpleaudio as sa
 import threading
 import configparser
+import urllib.request
 
 logging.getLogger("numba").setLevel(logging.WARNING)
 logging.getLogger("markdown_it").setLevel(logging.WARNING)
@@ -31,7 +32,11 @@ logger = logging.getLogger(__name__)
 config = configparser.ConfigParser()
 config.read('config.ini')
 update_url = config.get('setting','update_url')
-
+url_web = 'https://github.com/qinyan-alpha/TTV-ui/archive/refs/tags/' 
+url_zip = '.zip'
+now_version = config.get('setting','version')
+update_version = "{:.2f}".format(float(now_version) + 0.01)
+url = url_web + update_version + url_zip
 
 class Loadingwindow(QMainWindow):
     def __init__(self):
@@ -55,6 +60,7 @@ class Loadingwindow(QMainWindow):
         self.min = False
         self.start_pos = None
         self.outboder = False
+        self.updateing = False
               
         self.speaker = self.config = self.device = self._device = self.hps = self.result = self.net_g = None                             
         log_folder = "./logs"
@@ -79,7 +85,7 @@ class Loadingwindow(QMainWindow):
         widgets.changeoutboderAppBtn.clicked.connect(self.buttonClick)
         widgets.lineEdit.setText(update_url)
         widgets.lineEdit.textChanged.connect(self.updateurl)
-        widgets.update.clicked.connect(self.get_update)
+        widgets.update.clicked.connect(self.run_update)
         
         folder_names = [name for name in os.listdir(log_folder) if os.path.isdir(os.path.join(log_folder, name))]
         #print(type(folder_names))
@@ -272,10 +278,8 @@ class Loadingwindow(QMainWindow):
         if self.visiable == False:
             widgets.inferparsersetting.setVisible(True)
             self.visiable = True
-            widgets.pushButton_2.setStyleSheet("background-image: url(:/icons/images/icons/cil-arrow-bottom.png;background-repeat: no-repeat;background-position: center;")
-                                                                                                
-                                                                                                
-        elif self.visiable == True:
+            widgets.pushButton_2.setStyleSheet("background-image: url(:/icon/uiimage/button/icons/cil-arrow-bottom.png); background-repeat: no-repeat; background-position: center;")                                                                                        
+        else:
             widgets.inferparsersetting.setVisible(False)
             self.visiable = False
             widgets.pushButton_2.setStyleSheet("background-image: url(:/icon/uiimage/button/icons/cil-arrow-top.png);background-repeat: no-repeat;background-position: center;")
@@ -444,8 +448,46 @@ class Loadingwindow(QMainWindow):
             config.write(configfile)
 
     def get_update(self):
-        pass          
+        if self.updateing == True:
+            if check_download_url(url):
+                widgets.stateshow.setText("有新版本可用，准备下载")
+                time.sleep(3)
+                widgets.stateshow.setText("正在下载")
+                download_file(url)
+                allow_update = 'yes'
+                config.set('setting', 'allow_update', allow_update)
+                with open('config.ini', 'w') as configfile:
+                    config.write(configfile)
+                widgets.stateshow.setText("下载完成，请重启运行新版本")         
+            else:
+                widgets.stateshow.setText("当前已经是最新版本")
+        self.updateing = False
+        widgets.update.setEnabled(True)
+        widgets.update.setText('更新')   
+            
+    def run_update(self):
+        update_thread = threading.Thread(target=self.get_update)
+        widgets.update.setText('正在检查更新') 
+        widgets.update.setEnabled(False)
+        self.updateing = True
+        update_thread.start()                  
                                                 
+
+def check_download_url(url):
+    try:
+        response = urllib.request.urlopen(url)
+        if response.status == 200:
+            return True
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return False
+    return False
+
+
+def download_file(url):
+    filename = os.path.basename(url)
+    urllib.request.urlretrieve(url, filename)
+
 
 if  __name__ == '__main__':
     app =   QApplication([])
@@ -457,4 +499,3 @@ if  __name__ == '__main__':
     #quit()
     #sys.exit()
     
-
