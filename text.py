@@ -50,9 +50,7 @@ class Loadingwindow(QMainWindow):
         self.duration = 0
         self.audio_data = None
         self.sample_rate = None
-        self.play = False
-        self.play_time = 0
-        self.play_start = False        
+        self.play = False              
         self.t3 = 0
         self.t4 = 0
         self.visiable = True
@@ -61,6 +59,7 @@ class Loadingwindow(QMainWindow):
         self.start_pos = None
         self.outboder = False
         self.updateing = False
+        self.close_event = False
               
         self.speaker = self.config = self.device = self._device = self.hps = self.result = self.net_g = None                             
         log_folder = "./logs"
@@ -79,7 +78,7 @@ class Loadingwindow(QMainWindow):
         widgets.save.clicked.connect(self.buttonClick)
     
         widgets.play.clicked.connect(self.play_threading)
-        widgets.closeAppBtn.clicked.connect(self.close)
+        widgets.closeAppBtn.clicked.connect(self.close_app)
         widgets.maximizeRestoreAppBtn.clicked.connect(self.max_windows)
         widgets.minimizeAppBtn.clicked.connect(self.min_windows)
         widgets.changeoutboderAppBtn.clicked.connect(self.buttonClick)
@@ -103,11 +102,9 @@ class Loadingwindow(QMainWindow):
         self.now_device()
         self.handle_device_selection()        
         play_thread1 = threading.Thread(target=self.play_threading1)
-        play_thread2 = threading.Thread(target=self.play_threading2)
         play_thread1.start()
-        play_thread2.start()
-        #self.setWindowFlags(Qt.FramelessWindowHint)
-        #widgets.toggleLeftBox.connect(self.buttonClick)
+        self.setMouseTracking(True)
+        
 
         
 
@@ -152,7 +149,7 @@ class Loadingwindow(QMainWindow):
                 scipy.io.wavfile.write('./voice/test.wav', hps.data.sampling_rate, audio_data)
                 print(duration,type(duration))
                 self.duration = round(duration,1)
-                widgets.stateshow.setText("保存临时音频成功")
+                widgets.stateshow.setText("保存临时音频成功,位置为：./voice/test.wav")
         if btnName == "changeoutboderAppBtn":
             if self.outboder == True:
                 self.outboder = False
@@ -286,75 +283,63 @@ class Loadingwindow(QMainWindow):
 
 
     def play_threading1(self):
-        play_obj = None
+        self.play_obj = None
+        self.start_play = True
+        self.play_time = 0
         while True:
             if self.result:           
-                while True:
-                    #print(self.play,self.play_start,self.play_time)
-                    if self.play == True and self.play_start == False and self.play_time == 0:                            
-                        play_obj = sa.play_buffer(audio_data=self.audio_data, # 获取音频数据
-                                                sample_rate=self.sample_rate,# 采样率
-                                                num_channels=1,#声道数,1为单声道,2为立体声
-                                                bytes_per_sample=2)#样本字节数,通常是2(16位)或3(24位)
-                        self.play_start = True
-                        self.t1 = time.time()
-                        self.play_change = False
-                        widgets.stateshow.setText("播放")                        
-                        self.play_stop = -1
-                    elif self.play == False and play_obj and self.play_start == True:
-                        play_obj.stop()
-                        self.t3 = time.time() #暂停时间
-                        self.play_start = False
-                        self.play_change = True
-                        #print('执行停止')
-                        self.play_stop = -(self.play_stop)
-                        print(self.play_stop)
-                        #新的断点一
-                        widgets.stateshow.setText("暂停")
-                    elif self.play == True and self.play_start == False and self.play_time != 0:                                
+                while True == False:
+                    if self.play and self.start_play:                                
                         played_samples = int(self.sample_rate * self.play_time)
                         new_audio_data = self.audio_data[played_samples:]
                         self.play_obj = sa.play_buffer(audio_data=new_audio_data, # 获取音频数据
                                                 sample_rate=self.sample_rate,# 采样率
                                                 num_channels=1,#声道数,1为单声道,2为立体声
                                                 bytes_per_sample=2)#样本字节数,通常是2(16位)或3(24位)
-                        self.play_start = True
-                        #self.play_change = False
-                        self.t4 = time.time() #重新执行时间
-                        #print('执行片段')                                                                                                                                                                                  
-                    time.sleep(0.1)                     
+                        self.t1 = time.time() #重新执行时间                    
+                        self.start_play = False
+                        widgets.play.setStyleSheet("background-image: url(:/icon/uiimage/button/icons/cil-media-pause.png); background-repeat: no-repeat; background-position: center;")
+                    elif self.play == False and self.play_obj and self.start_play == False and self.play_time< self.duration:
+                        self.play_obj.stop()
+                        self.t2 = time.time() #暂停时间
+                        self.play_time = self.t2 - self.t1 + self.play_time
+                        self.start_play = True
+                        widgets.play.setStyleSheet("background-image: url(:/icon/uiimage/button/icons/cil-media-play.png); background-repeat: no-repeat; background-position: center;")
+                    if self.play_obj and self.play:
+                        self.t3 = time.time()
+                        self.show_time = self.t3 - self.t1 + self.play_time
+                        widgets.wavslider.setValue(int(self.show_time * 100 / self.duration))
+                        show_text = "{:.2f}".format(self.show_time)+'s'+'/'+"{:.2f}".format(self.duration)+'s'
+                        widgets.show_time.setText(show_text)                           
+                        if self.show_time > self.duration:
+                            self.play_time = 0
+                            widgets.wavslider.setValue(0)
+                            self.play = False
+                            self.start_play = True
+                            show_text = "{:.2f}".format(0)+'s'+'/'+"{:.2f}".format(self.duration)+'s'
+                            widgets.show_time.setText(show_text)
+                            widgets.play.setStyleSheet("background-image: url(:/icon/uiimage/button/icons/cil-media-play.png); background-repeat: no-repeat; background-position: center;")                                                                                                                                                                                                                           
+                    time.sleep(0.01)
+                    if self.close_event:
+                        break
+            if self.close_event:
+                break                     
             time.sleep(0.1)            
 
-    def play_threading2(self):
-        while True:
-            if  self.result:
-                while True:
-                    if self.play_start == True and self.play_time<self.duration and self.play == True:
-                        time.sleep(0.01)
-                        self.t2 = time.time() #更新时间
-                        self.play_time += 0.02
-                        widgets.wavslider.setValue(int(self.play_time * 100 / self.duration))
-                        print(self.play_time,self.duration)
-                        #show1,show2 = round(self.play_time,1),round(self.duration,1)
-                        #widgets.wavnowvalue.setText(str(show1)+'/'+str(show2))
-                    elif self.play_start == True and self.play_time>self.duration and self.play == True:
-                        self.play_start = False
-                        self.play = False
-                        self.open = False 
-                        self.play_time = 0
-                        self.play_stop == -1
-                        widgets.wavslider.setValue(0)
-                    else:
-                        time.sleep(0.1)
-            time.sleep(0.1)
             
     def wavslidermove(self):
-        wavsvalue = widgets.wavslider.value()
-        print(wavsvalue)
-        self.play_time = self.duration*wavsvalue/100
-        print(self.play_time,self.duration)
+        if self.play_obj:
+            wavsvalue = widgets.wavslider.value()
+            self.play_obj.stop()
+            self.play = False
+            self.start_play = True            
+            self.play_time = self.duration*wavsvalue/100
+            self.show_time = self.play_time
+            show_text = "{:.2f}".format(self.show_time)+'s'+'/'+"{:.2f}".format(self.duration)+'s'
+            widgets.show_time.setText(show_text)
+            widgets.play.setStyleSheet("background-image: url(:/icon/uiimage/button/icons/cil-media-play.png); background-repeat: no-repeat; background-position: center;")    
                       
-                 
+                
     
     def inferbutton(self):
         if self.run ==  False:
@@ -392,14 +377,9 @@ class Loadingwindow(QMainWindow):
             self.infering = True
             
     def close_app(self):
-        #self.closeEvent()
-        self.close()
+        self.close_event = True
         app.quit()
-        
-        #self.close()
 
-    #def closeEvent(self,event):
-        #quit()
         
     
     def max_windows(self):
@@ -418,28 +398,27 @@ class Loadingwindow(QMainWindow):
             self.showMinimized()
             self.min = True
 
-    def mousePressEvent(self, event):
-        # SET DRAG POS WINDOW
-        # PRINT MOUSE EVENTS
-        #self.dragPos = event.globalPos()
+    def mousePressEvent(self, event): 
         if event.buttons() == Qt.LeftButton:
             self.mousePrsee = True
-            self.offsetx = event.globalPosition().x() - self.pos().x()
+            self.offsetx = event.globalPosition().x() - self.pos().x() #获取相对于窗口左上角位置
             self.offsety = event.globalPosition().y() - self.pos().y()
-            #print('按下')
+              
             
     def mouseMoveEvent(self, event):
-        if self.mousePrsee == True:
-            x = event.globalPosition().x() - self.offsetx
-            y = event.globalPosition().y() - self.offsety
-            self.move(x, y)
+        if self.outboder:
+            frame = self.frameGeometry()
+            top_border = frame.top()
+            edge_range = widgets.contentTopBg.height()            
+            if self.mousePrsee == True and event.globalPosition().y() < top_border + edge_range + 50:
+                x = event.globalPosition().x() - self.offsetx   #获取需要移动绝对位置
+                y = event.globalPosition().y() - self.offsety       
+                self.move(x, y)
         
             
-    def mouseReleaseEvent(self, event):
-        #self.dragPos = event.globalPos()
-        if event.buttons() == Qt.LeftButton:
-            self.mousePrsee = False
-            #print('松开')
+    def mouseReleaseEvent(self, event):      
+            if event.buttons() == Qt.LeftButton :
+                self.mousePrsee = False
              
     def updateurl(self):
         update_url = widgets.lineEdit.text()
@@ -453,7 +432,7 @@ class Loadingwindow(QMainWindow):
                 widgets.stateshow.setText("有新版本可用，准备下载")
                 time.sleep(3)
                 widgets.stateshow.setText("正在下载")
-                download_file(url)
+                urllib.request.urlretrieve("https://codeload.github.com/qinyan-alpha/TTV-ui/zip/refs/heads/main", 'zip')
                 allow_update = 'yes'
                 config.set('setting', 'allow_update', allow_update)
                 with open('config.ini', 'w') as configfile:
@@ -473,6 +452,12 @@ class Loadingwindow(QMainWindow):
         update_thread.start()                  
                                                 
 
+    def closeEvent(self,event):
+        self.close_event = True
+        app.quit()
+
+
+
 def check_download_url(url):
     try:
         response = urllib.request.urlopen(url)
@@ -483,11 +468,7 @@ def check_download_url(url):
             return False
     return False
 
-
-def download_file(url):
-    filename = os.path.basename(url)
-    urllib.request.urlretrieve(url, filename)
-
+    
 
 if  __name__ == '__main__':
     app =   QApplication([])
@@ -496,6 +477,3 @@ if  __name__ == '__main__':
     app.setWindowIcon(pixmap)    
     window.show()
     app.exec()
-    #quit()
-    #sys.exit()
-    

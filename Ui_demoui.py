@@ -854,7 +854,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, -301, 923, 820))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, -15, 923, 828))
         self.verticalLayout_18 = QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_18.setObjectName(u"verticalLayout_18")
         self.frame_17 = QFrame(self.scrollAreaWidgetContents_2)
@@ -950,17 +950,25 @@ class Ui_MainWindow(object):
         self.frame_19.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_24 = QHBoxLayout(self.frame_19)
         self.horizontalLayout_24.setObjectName(u"horizontalLayout_24")
+        self.frame_20 = QFrame(self.frame_19)
+        self.frame_20.setObjectName(u"frame_20")
+        self.frame_20.setFrameShape(QFrame.StyledPanel)
+        self.frame_20.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_24.addWidget(self.frame_20)
+
         self.frame_18 = QFrame(self.frame_19)
         self.frame_18.setObjectName(u"frame_18")
         self.frame_18.setFrameShape(QFrame.StyledPanel)
         self.frame_18.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_24.addWidget(self.frame_18)
-
-        self.inferbutton = QPushButton(self.frame_19)
+        self.verticalLayout_21 = QVBoxLayout(self.frame_18)
+        self.verticalLayout_21.setSpacing(0)
+        self.verticalLayout_21.setObjectName(u"verticalLayout_21")
+        self.verticalLayout_21.setContentsMargins(0, 0, -1, 0)
+        self.inferbutton = QPushButton(self.frame_18)
         self.inferbutton.setObjectName(u"inferbutton")
-        self.inferbutton.setMinimumSize(QSize(100, 20))
-        self.inferbutton.setMaximumSize(QSize(100, 120))
+        self.inferbutton.setMinimumSize(QSize(0, 0))
+        self.inferbutton.setMaximumSize(QSize(16777215, 16777215))
         self.inferbutton.setStyleSheet(u"QPushButton:hover {\n"
 "       background-color: rgb(189, 147, 249);\n"
 "    color: rgb(255, 255, 255);\n"
@@ -981,14 +989,26 @@ class Ui_MainWindow(object):
 "}\n"
 "")
 
-        self.horizontalLayout_24.addWidget(self.inferbutton)
+        self.verticalLayout_21.addWidget(self.inferbutton)
 
-        self.frame_20 = QFrame(self.frame_19)
-        self.frame_20.setObjectName(u"frame_20")
-        self.frame_20.setFrameShape(QFrame.StyledPanel)
-        self.frame_20.setFrameShadow(QFrame.Raised)
+        self.show_time = QLabel(self.frame_18)
+        self.show_time.setObjectName(u"show_time")
+        self.show_time.setMinimumSize(QSize(0, 0))
+        self.show_time.setMaximumSize(QSize(16777215, 16777215))
+        self.show_time.setStyleSheet(u"font: 10pt \"\u5fae\u8f6f\u96c5\u9ed1\";")
+        self.show_time.setAlignment(Qt.AlignCenter)
 
-        self.horizontalLayout_24.addWidget(self.frame_20)
+        self.verticalLayout_21.addWidget(self.show_time)
+
+
+        self.horizontalLayout_24.addWidget(self.frame_18)
+
+        self.frame_26 = QFrame(self.frame_19)
+        self.frame_26.setObjectName(u"frame_26")
+        self.frame_26.setFrameShape(QFrame.StyledPanel)
+        self.frame_26.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_24.addWidget(self.frame_26)
 
 
         self.verticalLayout_17.addWidget(self.frame_19)
@@ -1767,7 +1787,9 @@ class Ui_MainWindow(object):
         font7.setBold(False)
         font7.setItalic(False)
         self.stateshow.setFont(font7)
-        self.stateshow.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+        self.stateshow.setStyleSheet(u"font-size: 11px; \n"
+"color: rgb(113, 126, 149);")
+        self.stateshow.setAlignment(Qt.AlignCenter)
 
         self.horizontalLayout_3.addWidget(self.stateshow)
 
@@ -1808,7 +1830,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -1839,12 +1861,13 @@ class Ui_MainWindow(object):
         self.textEdit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u8bf7\u8f93\u5165\u5f85\u8f6c\u5316\u6587\u5b57", None))
         self.play.setText("")
         self.inferbutton.setText(QCoreApplication.translate("MainWindow", u"\u63a8\u7406", None))
+        self.show_time.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>0/0</p></body></html>", None))
         self.save.setText("")
         self.pushButton_2.setText("")
         self.inferparsersetting1.setText(QCoreApplication.translate("MainWindow", u"\u53c2\u6570\u8bbe\u7f6e", None))
-        self.label_5.setText("")
+        self.label_5.setText(QCoreApplication.translate("MainWindow", u"\u8bf4\u8bdd\u4eba", None))
         self.comboBox_4.setCurrentText("")
-        self.label_6.setText(QCoreApplication.translate("MainWindow", u"SDP/DP\u6df7\u5408\u6bd4\u7387\uff1a", None))
+        self.label_6.setText(QCoreApplication.translate("MainWindow", u"SDP/DP\u6df7\u5408\u6bd4\u7387", None))
         self.rate1.setText(QCoreApplication.translate("MainWindow", u"0.2", None))
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"\u60c5\u611f", None))
         self.rate2.setText(QCoreApplication.translate("MainWindow", u"1", None))
@@ -1876,11 +1899,11 @@ class Ui_MainWindow(object):
         self.model_information.setText("")
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u6a21\u578b\u4e0b\u8f7d\uff1a<a href=\"https://huggingface.co/qinyan/TTV-log-model-for-vits/tree/main/mhyhhh\"><span style=\" text-decoration: underline; color:#ffffff;\">qinyan/TTV-log-model-for-vits at main (huggingface.co)</span></a></p></body></html>", None))
         self.driver_4.setText(QCoreApplication.translate("MainWindow", u"\u63d0\u4ea4\u8bad\u7ec3\u97f3\u9891\u548c\u95ee\u9898\u53cd\u9988", None))
-        self.label_12.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u8bf7\u8bbf\u95ee\u6211\u7684GITHUB\u4e3b\u9875\u8fdb\u884c\u8054\u7cfb\u548c\u63d0\u4ea4\uff1a<a href=\"https://github.com/qinyan-alpha?tab=projects\"><span style=\" text-decoration: underline; color:#ffffff;\">https://github.com/qinyan-alpha?tab=projects</span></a></p></body></html>", None))
+        self.label_12.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u8bf7\u8bbf\u95ee\u6211\u7684GITHUB\u4e3b\u9875\u8fdb\u884c\u8054\u7cfb\u548c\u63d0\u4ea4\uff1a<a href=\"https://github.com/qinyan-alpha/TTV-ui\"><span style=\" text-decoration: underline; color:#ffffff;\">qinyan-alpha/TTV-ui (github.com)</span></a></p></body></html>", None))
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u8bbe\u7f6e\u4ee3\u7406\u8def\u5f84\uff1a</p></body></html>", None))
         self.update.setText(QCoreApplication.translate("MainWindow", u"\u66f4\u65b0", None))
         self.creditsLabel.setText(QCoreApplication.translate("MainWindow", u"by zhenziyi", None))
-        self.stateshow.setText("")
+        self.stateshow.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p>\u72b6\u6001\u680f\uff1a\u663e\u793a\u7a0b\u5e8f\u8fd0\u884c\u72b6\u6001</p></body></html>", None))
         self.version.setText(QCoreApplication.translate("MainWindow", u"version: 1.00", None))
     # retranslateUi
 
