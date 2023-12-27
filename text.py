@@ -69,6 +69,8 @@ class Loadingwindow(QMainWindow):
         self.ui.setupUi(self)
         global widgets
         widgets = self.ui
+        print(now_version)
+        widgets.version.setText('version:'+now_version)
 
         widgets.btn_home_2.clicked.connect(self.buttonClick)
         widgets.toggleLeftBox.clicked.connect(self.buttonClick)
