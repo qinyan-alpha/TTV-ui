@@ -69,7 +69,8 @@ class Loadingwindow(QMainWindow):
         self.ui.setupUi(self)
         global widgets
         widgets = self.ui
-
+        widgets.version.setText('version: '+now_version)
+        
         widgets.btn_home_2.clicked.connect(self.buttonClick)
         widgets.toggleLeftBox.clicked.connect(self.buttonClick)
         widgets.inferbutton.clicked.connect(self.inferbutton)
@@ -432,7 +433,7 @@ class Loadingwindow(QMainWindow):
                 widgets.stateshow.setText("有新版本可用，准备下载")
                 time.sleep(3)
                 widgets.stateshow.setText("正在下载")
-                urllib.request.urlretrieve("https://codeload.github.com/qinyan-alpha/TTV-ui/zip/refs/heads/main", 'zip')
+                urllib.request.urlretrieve("https://codeload.github.com/qinyan-alpha/TTV-ui/zip/refs/heads/main", 'TTV-ui-main.zip')
                 allow_update = 'yes'
                 config.set('setting', 'allow_update', allow_update)
                 with open('config.ini', 'w') as configfile:
