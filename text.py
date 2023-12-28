@@ -177,8 +177,8 @@ class Loadingwindow(QMainWindow):
                 self.play = False
             elif  self.play == False:
                 self.play = True
-            self.t4 = self.t3
-            self.t3 = time.time()
+
+
                              
 
                 
@@ -290,8 +290,9 @@ class Loadingwindow(QMainWindow):
         self.play_time = 0
         while True:
             if self.result:           
-                while True == False:
-                    if self.play and self.start_play:                                
+                while self.close_event == False:
+                    if self.play and self.start_play:
+                        print(self.play,self.start_play)                                
                         played_samples = int(self.sample_rate * self.play_time)
                         new_audio_data = self.audio_data[played_samples:]
                         self.play_obj = sa.play_buffer(audio_data=new_audio_data, # 获取音频数据
